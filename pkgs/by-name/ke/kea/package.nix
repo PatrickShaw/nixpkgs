@@ -14,7 +14,7 @@
   boost186,
   libmysqlclient,
   log4cplus,
-  botan,
+  botan3,
   libpq,
   python3,
   mariadb,
@@ -73,7 +73,7 @@ stdenv.mkDerivation rec {
     boost186 # does not build with 1.87 yet, see https://gitlab.isc.org/isc-projects/kea/-/merge_requests/2523
     libmysqlclient
     log4cplus
-    botan
+    botan3
     python3
     libyang
   ];
