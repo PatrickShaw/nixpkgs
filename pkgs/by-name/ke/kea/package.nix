@@ -14,10 +14,11 @@
   boost186,
   libmysqlclient,
   log4cplus,
-  openssl,
+  botan,
   libpq,
   python3,
   mariadb,
+  libyang,
 
   # tests
   nixosTests,
@@ -42,7 +43,6 @@ stdenv.mkDerivation rec {
     "--enable-perfdhcp"
     "--enable-shell"
     "--localstatedir=/var"
-    "--with-openssl=${lib.getDev openssl}"
   ]
   ++ lib.optional withPostgres "--with-pgsql=${libpq.pg_config}/bin/pg_config"
   ++ lib.optional withMysql "--with-mysql=${lib.getDev libmysqlclient}/bin/mysql_config";
@@ -73,8 +73,9 @@ stdenv.mkDerivation rec {
     boost186 # does not build with 1.87 yet, see https://gitlab.isc.org/isc-projects/kea/-/merge_requests/2523
     libmysqlclient
     log4cplus
-    openssl
+    botan
     python3
+    libyang
   ];
 
   enableParallelBuilding = true;
