@@ -4,19 +4,22 @@
   fetchurl,
 
   # build time
-  autoreconfHook,
+  meson,
+  ninja,
   pkg-config,
   python3Packages,
 
   # runtime
   withMysql ? stdenv.buildPlatform.system == stdenv.hostPlatform.system,
   withPostgres ? stdenv.buildPlatform.system == stdenv.hostPlatform.system,
-  boost186,
+  boost187,
+  sphinx,
   libmysqlclient,
   log4cplus,
   openssl,
   libpq,
   python3,
+  mariadb,
 
   # tests
   nixosTests,
@@ -24,22 +27,12 @@
 
 stdenv.mkDerivation rec {
   pname = "kea";
-  version = "2.6.2"; # only even minor versions are stable
+  version = "3.0.0"; # only even minor versions are stable
 
   src = fetchurl {
-    url = "https://ftp.isc.org/isc/${pname}/${version}/${pname}-${version}.tar.gz";
-    hash = "sha256-ilC2MQNzS1nDuGGczWdm0t/uPwLjpfnzq8HNVfcPpCQ=";
+    url = "https://ftp.isc.org/isc/${pname}/${version}/${pname}-${version}.tar.xz";
+    hash = "sha256-v5Y9HhCVHYxXDGBCr8zyfHCdReA4E70mOde7HPxP7nY=";
   };
-
-  patches = [
-    ./dont-create-var.patch
-  ];
-
-  postPatch = ''
-    substituteInPlace ./src/bin/keactrl/Makefile.am --replace '@sysconfdir@' "$out/etc"
-    # darwin special-casing just causes trouble
-    substituteInPlace ./m4macros/ax_crypto.m4 --replace 'apple-darwin' 'nope'
-  '';
 
   outputs = [
     "out"
@@ -47,14 +40,29 @@ stdenv.mkDerivation rec {
     "man"
   ];
 
-  configureFlags = [
-    "--enable-perfdhcp"
-    "--enable-shell"
-    "--localstatedir=/var"
-    "--with-openssl=${lib.getDev openssl}"
-  ]
-  ++ lib.optional withPostgres "--with-pgsql=${libpq.pg_config}/bin/pg_config"
-  ++ lib.optional withMysql "--with-mysql=${lib.getDev libmysqlclient}/bin/mysql_config";
+  mesonFlags = [
+    "-Dlocalstatedir=/var"
+    "-Dmysql=${if withMysql then "enabled" else "disabled"}"
+    "-Dpostgresql=${if withPostgres then "enabled" else "disabled"}"
+
+    # Disabled for now to move forward with kea-3.0.0. Requires extra dependencies
+    "-Dnetconf=disabled"
+
+    "--mandir=\${man}/share/man"
+  ];
+
+  postUnpack = ''
+    patchShebangs kea-3.0.0/scripts/grabber.py
+  '';
+
+  postPatch = ''
+    # Kea creates runtime folders at build time which inherently won't work with Nix so we avoid doing so
+    # See: https://gitlab.isc.org/isc-projects/kea/-/blob/e933b13a8637170f32fd6666bc576fa72073f7a6/meson.build#L1121
+    substituteInPlace meson.build \
+      --replace-fail "install_emptydir(LOGDIR)" "# install_emptydir(LOGDIR)" \
+      --replace-fail "install_emptydir(RUNSTATEDIR)" "# install_emptydir(RUNSTATEDIR)" \
+      --replace-fail "install_emptydir(SHAREDSTATEDIR)" "# install_emptydir(SHAREDSTATEDIR)"
+  '';
 
   postConfigure = ''
     # Mangle embedded paths to dev-only inputs.
@@ -62,22 +70,19 @@ stdenv.mkDerivation rec {
   '';
 
   nativeBuildInputs = [
-    autoreconfHook
+    meson
+    ninja
     pkg-config
+    sphinx
   ]
   ++ (with python3Packages; [
-    sphinxHook
     sphinx-rtd-theme
-  ]);
-
-  sphinxBuilders = [
-    "html"
-    "man"
-  ];
-  sphinxRoot = "doc/sphinx";
+  ])
+  ++ lib.optional withPostgres libpq
+  ++ lib.optional withMysql mariadb;
 
   buildInputs = [
-    boost186 # does not build with 1.87 yet, see https://gitlab.isc.org/isc-projects/kea/-/merge_requests/2523
+    boost187
     libmysqlclient
     log4cplus
     openssl
@@ -98,8 +103,9 @@ stdenv.mkDerivation rec {
   };
 
   meta = {
-    # error: implicit instantiation of undefined template 'std::char_traits<unsigned char>'
-    broken = stdenv.hostPlatform.isDarwin;
+    # May work with current versions of kea derivation but has not been confirmed
+    # Previous error: implicit instantiation of undefined template 'std::char_traits<unsigned char>'
+    broken = stdenv.buildPlatform.system == "x86_64-darwin";
     changelog = "https://downloads.isc.org/isc/kea/${version}/Kea-${version}-ReleaseNotes.txt";
     homepage = "https://kea.isc.org/";
     description = "High-performance, extensible DHCP server by ISC";
