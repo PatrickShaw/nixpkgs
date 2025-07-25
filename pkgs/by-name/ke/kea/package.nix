@@ -4,7 +4,7 @@
   fetchurl,
 
   # build time
-  autoreconfHook,
+  meson,
   pkg-config,
   python3Packages,
 
