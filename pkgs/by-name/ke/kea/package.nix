@@ -17,6 +17,7 @@
   openssl,
   libpq,
   python3,
+  mysql,
 
   # tests
   nixosTests,
@@ -58,7 +59,9 @@ stdenv.mkDerivation rec {
   ++ (with python3Packages; [
     sphinxHook
     sphinx-rtd-theme
-  ]);
+  ])
+  ++ lib.optional withPostgres libpq
+  ++ lib.optional withMysql mysql;
 
   sphinxBuilders = [
     "html"
