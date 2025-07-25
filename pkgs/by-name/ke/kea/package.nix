@@ -17,7 +17,7 @@
   openssl,
   libpq,
   python3,
-  mysql,
+  mariadb,
 
   # tests
   nixosTests,
@@ -61,7 +61,7 @@ stdenv.mkDerivation rec {
     sphinx-rtd-theme
   ])
   ++ lib.optional withPostgres libpq
-  ++ lib.optional withMysql mysql;
+  ++ lib.optional withMysql mariadb;
 
   sphinxBuilders = [
     "html"
