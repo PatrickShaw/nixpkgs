@@ -9,8 +9,6 @@
   ninja,
   pkg-config,
   python3Packages,
-  bison,
-  flex,
 
   # runtime
   withMysql ? stdenv.buildPlatform.system == stdenv.hostPlatform.system,
@@ -50,6 +48,10 @@ stdenv.mkDerivation rec {
     # Disabled for now to move forward with kea-3.0.0. Requires extra dependencies
     "-Dnetconf=disabled"
   ];
+  
+  postUnpack = ''
+    patchShebangs scripts/grabber.py
+  ''
 
   postConfigure = ''
     # Mangle embedded paths to dev-only inputs.
@@ -60,13 +62,10 @@ stdenv.mkDerivation rec {
     meson
     ninja
     pkg-config
-    bison
-    flex
   ]
   ++ (with python3Packages; [
     sphinxHook
     sphinx-rtd-theme
-    jsonschema
   ])
   ++ lib.optional withPostgres libpq
   ++ lib.optional withMysql mariadb;
