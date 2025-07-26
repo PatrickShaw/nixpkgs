@@ -77,7 +77,7 @@ stdenv.mkDerivation rec {
   sphinxRoot = "doc/sphinx";
 
   buildInputs = [
-    boost186 # does not build with 1.87 yet, see https://gitlab.isc.org/isc-projects/kea/-/merge_requests/2523
+    boost187
     libmysqlclient
     log4cplus
     openssl
