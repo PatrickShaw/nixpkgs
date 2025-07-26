@@ -16,11 +16,10 @@
   boost186,
   libmysqlclient,
   log4cplus,
-  botan3,
+  openssl,
   libpq,
   python3,
   mariadb,
-  libyang,
 
   # tests
   nixosTests,
@@ -77,9 +76,8 @@ stdenv.mkDerivation rec {
     boost186 # does not build with 1.87 yet, see https://gitlab.isc.org/isc-projects/kea/-/merge_requests/2523
     libmysqlclient
     log4cplus
-    botan3
+    openssl
     python3
-    libyang 
   ];
 
   enableParallelBuilding = true;
