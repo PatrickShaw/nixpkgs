@@ -51,7 +51,7 @@ stdenv.mkDerivation rec {
   
   postUnpack = ''
     patchShebangs scripts/grabber.py
-  ''
+  '';
 
   postConfigure = ''
     # Mangle embedded paths to dev-only inputs.
