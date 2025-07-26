@@ -6,6 +6,7 @@
   # build time
   meson,
   cmake,
+  ninja,
   pkg-config,
   python3Packages,
 
@@ -40,13 +41,14 @@ stdenv.mkDerivation rec {
     "man"
   ];
 
-  configureFlags = [
-    "--enable-perfdhcp"
-    "--enable-shell"
-    "--localstatedir=/var"
-  ]
-  ++ lib.optional withPostgres "--with-pgsql=${libpq.pg_config}/bin/pg_config"
-  ++ lib.optional withMysql "--with-mysql=${lib.getDev libmysqlclient}/bin/mysql_config";
+  mesonFlags = [
+    "--runstatedir=/var"
+    "-Dmysql=${if withMysql then "enabled" else "disabled"}"
+    "-Dpostgresql=${if withPostgres then "enabled" else "disabled"}"
+
+    # Disabled for now to move forward with kea-3.0.0. Requires extra dependencies
+    "-Dnetconf=disabled"
+  ];
 
   postConfigure = ''
     # Mangle embedded paths to dev-only inputs.
@@ -55,7 +57,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     meson
-    cmake
+    ninja
     pkg-config
   ]
   ++ (with python3Packages; [
