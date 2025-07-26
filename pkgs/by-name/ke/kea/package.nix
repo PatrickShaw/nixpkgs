@@ -62,6 +62,7 @@ stdenv.mkDerivation rec {
   ++ (with python3Packages; [
     sphinxHook
     sphinx-rtd-theme
+    jsonschema
   ])
   ++ lib.optional withPostgres libpq
   ++ lib.optional withMysql mariadb;
