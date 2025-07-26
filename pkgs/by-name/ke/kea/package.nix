@@ -13,7 +13,7 @@
   # runtime
   withMysql ? stdenv.buildPlatform.system == stdenv.hostPlatform.system,
   withPostgres ? stdenv.buildPlatform.system == stdenv.hostPlatform.system,
-  boost186,
+  boost187,
   libmysqlclient,
   log4cplus,
   openssl,
