@@ -50,7 +50,7 @@ stdenv.mkDerivation rec {
   ];
   
   postUnpack = ''
-    patchShebangs scripts/grabber.py
+    patchShebangs kea-3.0.0/scripts/grabber.py
   '';
 
   postConfigure = ''
