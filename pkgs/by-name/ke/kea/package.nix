@@ -60,8 +60,7 @@ stdenv.mkDerivation rec {
     sphinxHook
     sphinx-rtd-theme
   ])
-  ++ lib.optional withPostgres libpq
-  ++ lib.optional withMysql mariadb;
+  ++ lib.optional withPostgres libpq;
 
   sphinxBuilders = [
     "html"
@@ -75,8 +74,8 @@ stdenv.mkDerivation rec {
     log4cplus
     botan3
     python3
-    libyang
-  ];
+    libyang 
+  ] ++ lib.optional withMysql mariadb;
 
   enableParallelBuilding = true;
 
