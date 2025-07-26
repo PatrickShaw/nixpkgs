@@ -42,7 +42,7 @@ stdenv.mkDerivation rec {
   ];
 
   mesonFlags = [
-    "--runstatedir=/var"
+    "-Drunstatedir=/var"
     "-Dmysql=${if withMysql then "enabled" else "disabled"}"
     "-Dpostgresql=${if withPostgres then "enabled" else "disabled"}"
 
