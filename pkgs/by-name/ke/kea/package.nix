@@ -9,6 +9,8 @@
   ninja,
   pkg-config,
   python3Packages,
+  bison,
+  flex
 
   # runtime
   withMysql ? stdenv.buildPlatform.system == stdenv.hostPlatform.system,
@@ -58,11 +60,12 @@ stdenv.mkDerivation rec {
     meson
     ninja
     pkg-config
+    bison
+    flex
   ]
   ++ (with python3Packages; [
     sphinxHook
     sphinx-rtd-theme
-    jsonschema
   ])
   ++ lib.optional withPostgres libpq
   ++ lib.optional withMysql mariadb;
