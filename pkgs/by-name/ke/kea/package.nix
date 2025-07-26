@@ -77,7 +77,7 @@ stdenv.mkDerivation rec {
   sphinxRoot = "doc/sphinx";
 
   buildInputs = [
-    boost187
+    boost186
     libmysqlclient
     log4cplus
     openssl
