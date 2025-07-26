@@ -14,6 +14,7 @@
   withMysql ? stdenv.buildPlatform.system == stdenv.hostPlatform.system,
   withPostgres ? stdenv.buildPlatform.system == stdenv.hostPlatform.system,
   boost187,
+  sphinx,
   libmysqlclient,
   log4cplus,
   openssl,
@@ -37,7 +38,6 @@ stdenv.mkDerivation rec {
   outputs = [
     "out"
     "doc"
-    "man"
   ];
 
   mesonFlags = [
@@ -62,9 +62,9 @@ stdenv.mkDerivation rec {
     meson
     ninja
     pkg-config
+    sphinx
   ]
   ++ (with python3Packages; [
-    sphinxHook
     sphinx-rtd-theme
   ])
   ++ lib.optional withPostgres libpq
@@ -77,7 +77,7 @@ stdenv.mkDerivation rec {
   sphinxRoot = "doc/sphinx";
 
   buildInputs = [
-    boost186
+    boost187
     libmysqlclient
     log4cplus
     openssl
@@ -98,8 +98,9 @@ stdenv.mkDerivation rec {
   };
 
   meta = {
-    # error: implicit instantiation of undefined template 'std::char_traits<unsigned char>'
-    broken = stdenv.hostPlatform.isDarwin;
+    # May work with current versions of kea derivation but has not been confirmed
+    # Previous error: implicit instantiation of undefined template 'std::char_traits<unsigned char>'
+    broken = stdenv.buildPlatform.system == "x86_64-darwin";
     changelog = "https://downloads.isc.org/isc/kea/${version}/Kea-${version}-ReleaseNotes.txt";
     homepage = "https://kea.isc.org/";
     description = "High-performance, extensible DHCP server by ISC";
