@@ -10,7 +10,7 @@
   pkg-config,
   python3Packages,
   bison,
-  flex
+  flex,
 
   # runtime
   withMysql ? stdenv.buildPlatform.system == stdenv.hostPlatform.system,
