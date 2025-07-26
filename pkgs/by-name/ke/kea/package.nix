@@ -5,6 +5,7 @@
 
   # build time
   meson,
+  cmake,
   pkg-config,
   python3Packages,
 
@@ -54,13 +55,15 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     meson
+    cmake
     pkg-config
   ]
   ++ (with python3Packages; [
     sphinxHook
     sphinx-rtd-theme
   ])
-  ++ lib.optional withPostgres libpq;
+  ++ lib.optional withPostgres libpq
+  ++ lib.optional withMysql mariadb;
 
   sphinxBuilders = [
     "html"
@@ -75,7 +78,7 @@ stdenv.mkDerivation rec {
     botan3
     python3
     libyang 
-  ] ++ lib.optional withMysql mariadb;
+  ];
 
   enableParallelBuilding = true;
 
