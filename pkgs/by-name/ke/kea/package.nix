@@ -5,7 +5,6 @@
 
   # build time
   meson,
-  cmake,
   ninja,
   pkg-config,
   python3Packages,
@@ -76,12 +75,6 @@ stdenv.mkDerivation rec {
   ])
   ++ lib.optional withPostgres libpq
   ++ lib.optional withMysql mariadb;
-
-  sphinxBuilders = [
-    "html"
-    "man"
-  ];
-  sphinxRoot = "doc/sphinx";
 
   buildInputs = [
     boost187
