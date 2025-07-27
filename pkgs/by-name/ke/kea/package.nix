@@ -40,7 +40,7 @@ stdenv.mkDerivation rec {
   ];
 
   mesonFlags = [
-    "-Drunstatedir=/var/lib"
+    "-Dlocalstatedir=/var"
     "-Dmysql=${if withMysql then "enabled" else "disabled"}"
     "-Dpostgresql=${if withPostgres then "enabled" else "disabled"}"
 
@@ -53,10 +53,12 @@ stdenv.mkDerivation rec {
   '';
 
   postPatch = ''
-    # See: https://gitlab.isc.org/isc-projects/kea/-/blob/e933b13a8637170f32fd6666bc576fa72073f7a6/meson.build#L1122
     # Kea creates runtime folders at build time which inherently won't work with Nix so we avoid doing so
     substituteInPlace meson.build \
-      --replace-fail "install_emptydir(RUNSTATEDIR)" "# install_emptydir(RUNSTATEDIR)"
+      # See: https://gitlab.isc.org/isc-projects/kea/-/blob/e933b13a8637170f32fd6666bc576fa72073f7a6/meson.build#L1121
+      --replace-fail "install_emptydir(LOGDIR)" "# install_emptydir(LOGDIR)" \
+      --replace-fail "install_emptydir(RUNSTATEDIR)" "# install_emptydir(RUNSTATEDIR)" \
+      --replace-fail "install_emptydir(SHAREDSTATEDIR)" "# install_emptydir(SHAREDSTATEDIR)"
   '';
 
   postConfigure = ''
