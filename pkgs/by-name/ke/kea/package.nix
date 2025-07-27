@@ -54,7 +54,8 @@ stdenv.mkDerivation rec {
   '';
 
   postPatch = ''
-    # kea builds
+    # See: https://gitlab.isc.org/isc-projects/kea/-/blob/e933b13a8637170f32fd6666bc576fa72073f7a6/meson.build#L1122
+    # Kea creates runtime folders at build time which inherently won't work with Nix so we avoid doing so
     substituteInPlace src/meson.build \
       --replace "install_emptydir(RUNSTATEDIR)" "# install_emptydir(RUNSTATEDIR)"
   '';
