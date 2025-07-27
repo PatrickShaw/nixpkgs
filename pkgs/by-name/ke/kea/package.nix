@@ -37,6 +37,7 @@ stdenv.mkDerivation rec {
   outputs = [
     "out"
     "doc"
+    "man"
   ];
 
   mesonFlags = [
@@ -46,6 +47,8 @@ stdenv.mkDerivation rec {
 
     # Disabled for now to move forward with kea-3.0.0. Requires extra dependencies
     "-Dnetconf=disabled"
+
+    "--mandir=\${man}/share/man"
   ];
 
   postUnpack = ''
