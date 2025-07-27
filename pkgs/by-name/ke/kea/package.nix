@@ -41,16 +41,22 @@ stdenv.mkDerivation rec {
   ];
 
   mesonFlags = [
-    "-Drunstatedir=/var"
+    "-Drunstatedir=/var/lib"
     "-Dmysql=${if withMysql then "enabled" else "disabled"}"
     "-Dpostgresql=${if withPostgres then "enabled" else "disabled"}"
 
     # Disabled for now to move forward with kea-3.0.0. Requires extra dependencies
     "-Dnetconf=disabled"
   ];
-  
+
   postUnpack = ''
     patchShebangs kea-3.0.0/scripts/grabber.py
+  '';
+
+  postPatch = ''
+    # kea builds
+    substituteInPlace src/meson.build \
+      --replace "install_emptydir(RUNSTATEDIR)" "# install_emptydir(RUNSTATEDIR)"
   '';
 
   postConfigure = ''
