@@ -222,7 +222,7 @@ rec {
       homepage = "https://github.com/ActivityWatch/aw-server-rust";
       maintainers = with lib.maintainers; [ huantian ];
       mainProgram = "aw-server";
-      platforms = lib.platforms.linux;
+      platforms = lib.platforms.linux ++ lib.platforms.darwin;
       license = lib.licenses.mpl20;
     };
   };
